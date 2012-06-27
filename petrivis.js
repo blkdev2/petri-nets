@@ -19,13 +19,14 @@ var sample_net2 = {
       "p4" : { "x" : 200, "y" : 300 },
       "p5" : { "x" : 300, "y" : 300 }},
     "transitions" :
-    { "source" : { "x" : 150, "y" : 50, "orientation" : 1},
+    { "src1" : { "x" : 50, "y" : 100, "orientation" : 2},
+      "src2" : { "x" : 250, "y" : 100, "orientation" : 2 },
       "t1" : { "x" : 150, "y" : 150, "orientation" : 1},
       "t2" : { "x" : 250, "y" : 250, "orientation" : 1},
       "sink" : {"x" : 250, "y" : 350, "orientation" : 1}},
     "place_transition" : [ ["p1", "t1"], ["p2", "t1"], ["p3", "t2"],
 			   ["p4", "sink"], ["p5", "sink"]],
-    "transition_place" : [ ["source", "p1"], ["source", "p2"], 
+    "transition_place" : [ ["src1", "p1"], ["src2", "p2"], 
 			   ["t1", "p3"], ["t2", "p4"], ["t2", "p5"] ]
 };
 
@@ -132,9 +133,15 @@ function TransitionElement(vis, name, transition) {
     this.t = transition;
     var th = vis.th;
     var tw = vis.tw;
-    this.rect = vis.paper.rect(this.t.x - tw/2, this.t.y - th/2, tw, th);
+    if(this.t.orientation === 1) {
+	this.rect = vis.paper.rect(this.t.x - tw/2, this.t.y - th/2, tw, th);
+	this.name_text = vis.paper.text(this.t.x - tw/2 + 5, this.t.y, name);
+    } else {
+	this.rect = vis.paper.rect(this.t.x - th/2, this.t.y - tw/2, th, tw);
+	this.name_text = vis.paper.text(this.t.x, this.t.y - tw/2 + 5, name);
+	this.name_text.transform('r90');
+    }
     this.rect.attr({fill: "white"});
-    this.name_text = vis.paper.text(this.t.x - tw/2 + 5, this.t.y, name);
     this.name_text.attr({'text-anchor' : 'start'});
     var activation_callback = function () {
 	vis.update_marking(activate_transition(vis.net, vis.marking, name));

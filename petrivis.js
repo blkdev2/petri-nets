@@ -19,14 +19,14 @@ var sample_net2 = {
       "p4" : { "x" : 200, "y" : 300 },
       "p5" : { "x" : 300, "y" : 300 }},
     "transitions" :
-    { "src1" : { "x" : 50, "y" : 100, "orientation" : 2},
-      "src2" : { "x" : 250, "y" : 100, "orientation" : 2 },
+    { "source1" : { "x" : 50, "y" : 100, "orientation" : 2},
+      "source2" : { "x" : 250, "y" : 100, "orientation" : 2 },
       "t1" : { "x" : 150, "y" : 150, "orientation" : 1},
       "t2" : { "x" : 250, "y" : 250, "orientation" : 1},
       "sink" : {"x" : 250, "y" : 350, "orientation" : 1}},
     "place_transition" : [ ["p1", "t1"], ["p2", "t1"], ["p3", "t2"],
 			   ["p4", "sink"], ["p5", "sink"]],
-    "transition_place" : [ ["src1", "p1"], ["src2", "p2"], 
+    "transition_place" : [ ["source1", "p1"], ["source2", "p2"], 
 			   ["t1", "p3"], ["t2", "p4"], ["t2", "p5"] ]
 };
 
@@ -108,16 +108,16 @@ PlaceElement.prototype = {
 	case 0:
 	    break;
 	case 1:
-	    this.tokens.push(this.vis.paper.circle(this.p.x, this.p.y, 3));
+	    this.tokens.push(this.vis.paper.circle(this.p.x, this.p.y, 4));
 	    break;
 	case 2:
-	    this.tokens.push(this.vis.paper.circle(this.p.x - 5, this.p.y, 3));
-	    this.tokens.push(this.vis.paper.circle(this.p.x + 5, this.p.y, 3));
+	    this.tokens.push(this.vis.paper.circle(this.p.x - 7, this.p.y, 4));
+	    this.tokens.push(this.vis.paper.circle(this.p.x + 7, this.p.y, 4));
 	    break;
 	case 3:
-	    this.tokens.push(this.vis.paper.circle(this.p.x - 5, this.p.y, 3));
-	    this.tokens.push(this.vis.paper.circle(this.p.x + 5, this.p.y, 3));
-	    this.tokens.push(this.vis.paper.circle(this.p.x, this.p.y - 10, 3));
+	    this.tokens.push(this.vis.paper.circle(this.p.x - 7, this.p.y, 4));
+	    this.tokens.push(this.vis.paper.circle(this.p.x + 7, this.p.y, 4));
+	    this.tokens.push(this.vis.paper.circle(this.p.x, this.p.y - 14, 4));
 	    break;
 	default:
 	    throw ("Display for " + n.toFixed() + " tokens not implemented.");
@@ -188,9 +188,9 @@ function PetriNetVisualization(paper, net, marking) {
 }
 
 PetriNetVisualization.prototype = {
-    "tw" : 40,
-    "th" : 15,
-    "pr" : 20,    
+    "tw" : 50,
+    "th" : 20,
+    "pr" : 25,    
     "create_link" : function(p, t, forwardp) {
 	var elems = {};
 	var a, b;

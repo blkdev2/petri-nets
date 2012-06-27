@@ -1,3 +1,5 @@
+MAX_TOKENS = 3;
+
 var sample_net = {
     "places" :
     { "p1" : { "x" : 100, "y" : 100 },
@@ -17,10 +19,14 @@ var sample_net2 = {
       "p4" : { "x" : 200, "y" : 300 },
       "p5" : { "x" : 300, "y" : 300 }},
     "transitions" :
-    { "t1" : { "x" : 150, "y" : 150, "orientation" : 1},
-      "t2" : { "x" : 250, "y" : 250, "orientation" : 1} },
-    "place_transition" : [ ["p1", "t1"], ["p2", "t1"], ["p3", "t2"] ],
-    "transition_place" : [ ["t1", "p3"], ["t2", "p4"], ["t2", "p5"] ]
+    { "source" : { "x" : 150, "y" : 50, "orientation" : 1},
+      "t1" : { "x" : 150, "y" : 150, "orientation" : 1},
+      "t2" : { "x" : 250, "y" : 250, "orientation" : 1},
+      "sink" : {"x" : 250, "y" : 350, "orientation" : 1}},
+    "place_transition" : [ ["p1", "t1"], ["p2", "t1"], ["p3", "t2"],
+			   ["p4", "sink"], ["p5", "sink"]],
+    "transition_place" : [ ["source", "p1"], ["source", "p2"], 
+			   ["t1", "p3"], ["t2", "p4"], ["t2", "p5"] ]
 };
 
 
@@ -42,6 +48,7 @@ function activate_transition(net, marking, tname) {
     }
     
     // Check that input places are all marked
+    // Note: If there are no input places, transition is always firable
     for(var i = 0; i < input_places.length; i++) {
 	if(marking[input_places[i]] < 1) {
 	    // Failed activation precondition, return marking unmodified
@@ -70,6 +77,9 @@ function activate_transition(net, marking, tname) {
 	    post_marking[pname] += 1;
 	} else {
 	    post_marking[pname] = 1;
+	}
+	if(post_marking[pname] > MAX_TOKENS) {
+	    post_marking[pname] = MAX_TOKENS;
 	}
     }
 
@@ -115,6 +125,27 @@ PlaceElement.prototype = {
     }
 };
 
+
+function TransitionElement(vis, name, transition) {
+    this.vis = vis;
+    this.name = name;
+    this.t = transition;
+    var th = vis.th;
+    var tw = vis.tw;
+    this.rect = vis.paper.rect(this.t.x - tw/2, this.t.y - th/2, tw, th);
+    this.rect.attr({fill: "white"});
+    this.name_text = vis.paper.text(this.t.x - tw/2 + 5, this.t.y, name);
+    this.name_text.attr({'text-anchor' : 'start'});
+    var activation_callback = function () {
+	vis.update_marking(activate_transition(vis.net, vis.marking, name));
+    };
+    this.rect.click(activation_callback);
+    this.name_text.click(activation_callback);
+}
+
+TransitionElement.prototype = {
+};
+
 function PetriNetVisualization(paper, net, marking) {
     this.net = net;
     this.marking = marking;
@@ -131,7 +162,8 @@ function PetriNetVisualization(paper, net, marking) {
     this.transition_elements = {};
     for(var name in net.transitions) {
 	var t = net.transitions[name];
-	this.transition_elements[name] = this.create_transition(name, t);
+	//this.transition_elements[name] = this.create_transition(name, t);
+	this.transition_elements[name] = new TransitionElement(this, name, t);
     }
 
     // Create links
@@ -152,17 +184,6 @@ PetriNetVisualization.prototype = {
     "tw" : 40,
     "th" : 15,
     "pr" : 20,    
-    "create_transition" : function(name, t) {
-	var elems = {};
-	elems.rect = this.paper.rect(t.x - this.tw/2, t.y-  this.th/2, this.tw, this.th);
-	elems.rect.attr({fill: "white"});
-	elems.name_text = this.paper.text(t.x - this.tw/2 + 10, t.y, name);
-	var vis = this;
-	elems.rect.click(function () {
-	    vis.update_marking(activate_transition(vis.net, vis.marking, name));
-	});
-	return elems;
-    },
     "create_link" : function(p, t, forwardp) {
 	var elems = {};
 	var a, b;

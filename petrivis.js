@@ -1,38 +1,3 @@
-MAX_TOKENS = 3;
-
-var sample_net = {
-    "places" :
-    { "p1" : { "x" : 100, "y" : 100 },
-      "p2" : { "x" : 200, "y" : 100 },
-      "p3" : { "x" : 200, "y" : 200 } },
-    "transitions" :
-    { "t1" : { "x" : 150, "y" : 150, "orientation" : 1} },
-    "place_transition" : [ ["p1", "t1"], ["p2", "t1"] ],
-    "transition_place" : [ ["t1", "p3"] ]
-};
-
-var sample_net2 = {
-    "places" :
-    { "p1" : { "x" : 100, "y" : 100 },
-      "p2" : { "x" : 200, "y" : 100 },
-      "p3" : { "x" : 200, "y" : 200 },
-      "p4" : { "x" : 200, "y" : 300 },
-      "p5" : { "x" : 300, "y" : 300 }},
-    "transitions" :
-    { "source1" : { "x" : 50, "y" : 100, "orientation" : 2},
-      "source2" : { "x" : 250, "y" : 100, "orientation" : 2 },
-      "t1" : { "x" : 150, "y" : 150, "orientation" : 1},
-      "t2" : { "x" : 250, "y" : 250, "orientation" : 1},
-      "sink" : {"x" : 250, "y" : 350, "orientation" : 1}},
-    "place_transition" : [ ["p1", "t1"], ["p2", "t1"], ["p3", "t2"],
-			   ["p4", "sink"], ["p5", "sink"]],
-    "transition_place" : [ ["source1", "p1"], ["source2", "p2"], 
-			   ["t1", "p3"], ["t2", "p4"], ["t2", "p5"] ]
-};
-
-
-var sample_marking = { "p1" : 1, "p2" : 1, "p3" : 2};
-
 function activate_transition(net, marking, tname) {
     // Copy current marking
     var post_marking = {}
@@ -79,9 +44,6 @@ function activate_transition(net, marking, tname) {
 	} else {
 	    post_marking[pname] = 1;
 	}
-	if(post_marking[pname] > MAX_TOKENS) {
-	    post_marking[pname] = MAX_TOKENS;
-	}
     }
 
     return post_marking;
@@ -120,7 +82,9 @@ PlaceElement.prototype = {
 	    this.tokens.push(this.vis.paper.circle(this.p.x, this.p.y - 14, 4));
 	    break;
 	default:
-	    throw ("Display for " + n.toFixed() + " tokens not implemented.");
+	    var number_text = this.vis.paper.text(this.p.x, this.p.y, n.toString());
+	    number_text.attr({'font-size' : 14});
+	    this.tokens.push(number_text);
 	}
 	this.tokens.attr({fill: "black"});
     }
@@ -256,6 +220,16 @@ function line_cmd(x0, y0, x1, y1) {
 
 window.onload = function() {
     var paper = new Raphael(document.getElementById('canvas_container'), 500, 500);
-    //var vis = new PetriNetVisualization(paper, sample_net, activate_transition(sample_net, sample_marking, "t1"));
-    var vis = new PetriNetVisualization(paper, sample_net2, sample_marking);
+    var network_text = document.getElementById("network_text");
+    var marking_text = document.getElementById("marking_text");
+    var eval_button = document.getElementById("eval_button");
+    eval_button.onclick = function () {
+	var network = JSON.parse(network_text.value);
+	var marking = JSON.parse(marking_text.value);
+	paper.clear();
+	var vis = new PetriNetVisualization(paper, network, marking);
+    };
+    var network = JSON.parse(network_text.value);
+    var marking = JSON.parse(marking_text.value);
+    var vis = new PetriNetVisualization(paper, network, marking);
 };

@@ -6,12 +6,46 @@
     <style type="text/css">
       #canvas_container {
         width: 400px;
-        height: 450px;
-        border: 1px solid #aaa;
+        height: 400px;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+      }
+      #json_container {
+        
       }
     </style>
   </head>
   <body>
     <div id="canvas_container"></div>
+    <span>
+      <div id="json_container">
+	<textarea id="network_text" rows="20" cols="60">
+{
+    "places" :
+    { "p1" : { "x" : 100, "y" : 100 },
+      "p2" : { "x" : 200, "y" : 100 },
+      "p3" : { "x" : 200, "y" : 200 },
+      "p4" : { "x" : 200, "y" : 300 },
+      "p5" : { "x" : 300, "y" : 300 }},
+    "transitions" :
+    { "source1" : { "x" : 50, "y" : 100, "orientation" : 2},
+      "source2" : { "x" : 250, "y" : 100, "orientation" : 2 },
+      "t1" : { "x" : 150, "y" : 150, "orientation" : 1},
+      "t2" : { "x" : 250, "y" : 250, "orientation" : 1},
+      "sink" : {"x" : 250, "y" : 350, "orientation" : 1}},
+    "place_transition" : [ ["p1", "t1"], ["p2", "t1"], ["p3", "t2"],
+			   ["p4", "sink"], ["p5", "sink"]],
+    "transition_place" : [ ["source1", "p1"], ["source2", "p2"], 
+			   ["t1", "p3"], ["t2", "p4"], ["t2", "p5"] ]
+}
+	</textarea>
+	<br>
+	<textarea id="marking_text" rows="5" cols="60">
+{ "p1" : 1, "p2" : 1, "p3" : 2}
+	</textarea>
+	<br>
+	<button id="eval_button">Evaluate</button>
+      </div>
+    </span>
   </body>
 </html>

@@ -33,7 +33,9 @@ function activate_transition(net, marking, tname) {
     // Decrement input place token count
     for(var i = 0; i < input_places.length; i++) {
 	var pname = input_places[i];
-	post_marking[pname] = Math.max(post_marking[pname] - 1, 0);
+	if(pname in post_marking && post_marking[pname] > 0) {
+		post_marking[pname] -= 1;
+	}
     }
 	
     // Increment output place token count
